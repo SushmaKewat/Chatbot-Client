@@ -6,7 +6,7 @@ export function useVoiceToText(onTranscript: (transcript: string) => void) {
 	const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } =
 		useSpeechRecognition();
 
-	const startListening = useCallback(() => {
+	const startedListening = useCallback(() => {
 		console.log('Speech recognition: ', browserSupportsSpeechRecognition);
 		if (!browserSupportsSpeechRecognition) {
 			console.log('Speech recognition not supported');
@@ -14,7 +14,9 @@ export function useVoiceToText(onTranscript: (transcript: string) => void) {
 		}
 		console.log('Speech recognition started');
 		resetTranscript();
+		console.log('Reset transcript');
 		SpeechRecognition.startListening({ continuous: false, language: 'en-IN' });
+		console.log('Listenging started');
 	}, [browserSupportsSpeechRecognition, resetTranscript]);
 
 	useEffect(() => {
@@ -25,5 +27,5 @@ export function useVoiceToText(onTranscript: (transcript: string) => void) {
 		}
 	}, [listening, transcript, onTranscript, resetTranscript]);
 
-	return { transcript, listening, startListening, browserSupportsSpeechRecognition };
+	return { transcript, listening, startedListening, browserSupportsSpeechRecognition };
 }

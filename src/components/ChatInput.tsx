@@ -16,7 +16,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
 		await onSendMessage(transcript);
 	};
 
-	const { listening, startListening, browserSupportsSpeechRecognition } =
+	const { listening, startedListening, browserSupportsSpeechRecognition } =
 		useVoiceToText(handleVoiceTranscript);
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -62,7 +62,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
 					{browserSupportsSpeechRecognition && (
 						<button
 							type='button'
-							onClick={startListening}
+							onClick={startedListening}
 							className={` m-1 w-10 h-10 rounded-full ${
 								listening ? 'bg-red-400' : 'bg-gray-200'
 							}`}
