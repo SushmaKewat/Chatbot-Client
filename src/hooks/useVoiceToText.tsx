@@ -1,4 +1,3 @@
-import 'regenerator-runtime/runtime';
 import { useCallback, useEffect } from 'react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
@@ -6,7 +5,7 @@ export function useVoiceToText(onTranscript: (transcript: string) => void) {
 	const { transcript, listening, resetTranscript, browserSupportsSpeechRecognition } =
 		useSpeechRecognition();
 
-	const startedListening = useCallback(() => {
+	const startedListening = useCallback(async () => {
 		console.log('Speech recognition: ', browserSupportsSpeechRecognition);
 		if (!browserSupportsSpeechRecognition) {
 			console.log('Speech recognition not supported');
@@ -15,7 +14,11 @@ export function useVoiceToText(onTranscript: (transcript: string) => void) {
 		console.log('Speech recognition started');
 		resetTranscript();
 		console.log('Reset transcript');
-		SpeechRecognition.startListening({ continuous: false, language: 'en-IN' });
+		await SpeechRecognition.startListening({
+			continuous: false,
+			language: 'en-IN',
+			interimResults: true,
+		});
 		console.log('Listenging started');
 	}, [browserSupportsSpeechRecognition, resetTranscript]);
 
