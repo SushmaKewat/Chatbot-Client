@@ -39,13 +39,12 @@ export const ChatInterface = () => {
 	const [page, setPage] = useState(1);
 	const [totalPages, setTotalPages] = useState(3);
 
-	const [currentBotMessage, setCurrentBotMessage] = useState(null);
 	const bottomRef = useRef<HTMLDivElement>(null);
-	const { speak, isVoiceLoading, voiceError } = useTTS();
+	const { speak } = useTTS();
 
 	useEffect(() => {
 		bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-	}, [messages, currentBotMessage]);
+	}, [messages]);
 
 	useEffect(() => {
 		const storedUserId = localStorage.getItem('chatUserId');
