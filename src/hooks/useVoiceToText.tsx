@@ -12,6 +12,7 @@ export function useVoiceToText(onTranscript: (transcript: string) => void) {
 			console.log('Speech recognition not supported');
 			return;
 		}
+		console.log('Speech recognition started');
 		resetTranscript();
 		SpeechRecognition.startListening({ continuous: false, language: 'en-IN' });
 	}, [browserSupportsSpeechRecognition, resetTranscript]);

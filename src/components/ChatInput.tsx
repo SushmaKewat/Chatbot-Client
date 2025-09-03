@@ -11,7 +11,8 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
 	const textareaRef = useRef<HTMLInputElement | null>(null);
 
 	const handleVoiceTranscript = async (transcript: string) => {
-		console.log(transcript);
+		console.log(transcript, 'transcript');
+
 		await onSendMessage(transcript);
 	};
 
