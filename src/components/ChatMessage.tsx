@@ -1,5 +1,6 @@
 import type { ChatMessageInterface } from '../interfaces/ChatMessageInterface';
 import assistant from '../assets/robot-assistant.png';
+import { useTTS } from '../hooks/useTTS';
 
 function TimeDisplay({ timestamp }: { timestamp: number }) {
 	const date = new Date(timestamp);
@@ -17,6 +18,8 @@ interface ChatMessageProps {
 
 const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 	const isUser = message.role === 'user';
+
+	const { speak, togglePauseResume, cancel, isPlaying, isPaused } = useTTS();
 
 	const bgColor = isUser
 		? 'bg-gradient-to-br from-violet-400  to-pink-400'
@@ -40,6 +43,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 					/>
 				</div>
 			)}
+
 			<div
 				className={`${bgColor} ${textColor} ${corner}
 				text-xs font-medium sm:text-sm md:text-sm lg:text-sm rounded-2xl  px-6 py-2 m-2 flex max-w-xs sm:max-w-fit md:max-w-1/2 shadow-md flex-col`}>
@@ -48,6 +52,24 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
 					<TimeDisplay timestamp={message.timestamp} />
 				</div>
 			</div>
+			{!isUser && (
+				<div className='flex gap-2 '>
+					<button
+						onClick={() =>
+							isPlaying || isPaused ? togglePauseResume() : speak(message.content)
+						}
+						className='px-1 py-1 border border-pink-400 rounded-full'>
+						{isPaused ? '▶' : isPlaying ? '⏸' : '▶'}
+					</button>
+
+					<button
+						onClick={cancel}
+						className='px-1 py-1 border border-pink-400 rounded-full'>
+						⏹
+					</button>
+				</div>
+			)}
+
 			{isUser && (
 				<div
 					className={`w-10 h-10 my-2 rounded-full ${bgColor} flex items-center justify-center font-bold ${textColor}`}>
