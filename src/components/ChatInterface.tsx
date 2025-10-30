@@ -40,7 +40,12 @@ export const ChatInterface = () => {
 	const [totalPages, setTotalPages] = useState(3);
 
 	const bottomRef = useRef<HTMLDivElement>(null);
-	const { speak } = useTTS();
+	const tts = useTTS();
+
+	// const [isRecording, setIsRecording] = useState(false);
+	// const [transcript, setTranscript] = useState('');
+	// const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+	// const chunksRef = useRef<Blob[]>([]);
 
 	useEffect(() => {
 		bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -105,8 +110,8 @@ export const ChatInterface = () => {
 
 	const ws = useRef<WebSocket | null>(null);
 
-	const handleSpeak = (text: string) => {
-		if (text.trim()) speak(text);
+	const handleSpeak = (text: string, messageId: string) => {
+		if (text.trim()) tts.speak(text, messageId);
 	};
 
 	useEffect(() => {
@@ -140,7 +145,7 @@ export const ChatInterface = () => {
 						timestamp: Date.now(),
 					};
 					setMessages((prev: ChatMessageInterface[]) => [...prev, botMessage]);
-					handleSpeak(response);
+					handleSpeak(response, botMessage.id);
 
 					if (response === 'Please select a Geek to proceed') {
 						const geekOptions = JSON.parse(options[0]);
@@ -280,6 +285,39 @@ export const ChatInterface = () => {
 		console.log('geek card clicked');
 	};
 
+	// const startRecording = async () => {
+	// 	const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+	// 	const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+	// 	mediaRecorderRef.current = mediaRecorder;
+	// 	chunksRef.current = [];
+
+	// 	mediaRecorder.ondataavailable = (e) => {
+	// 		if (e.data.size > 0) {
+	// 			chunksRef.current.push(e.data);
+	// 		}
+	// 	};
+
+	// 	mediaRecorder.onstop = async () => {
+	// 		const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+	// 		const formData = new FormData();
+	// 		formData.append('file', blob, 'speech.webm');
+
+	// 		const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/stt`, formData, {
+	// 			headers: { 'Content-Type': 'multipart/form-data' },
+	// 		});
+
+	// 		setTranscript(res.data.text); // Whisper auto detects Hindi/English
+	// 	};
+
+	// 	mediaRecorder.start();
+	// 	setIsRecording(true);
+	// };
+
+	// const stopRecording = () => {
+	// 	mediaRecorderRef.current?.stop();
+	// 	setIsRecording(false);
+	// };
+
 	return (
 		<section className='w-full h-full relative flex flex-col items-center '>
 			<div className=' w-full mx-auto h-screen  flex flex-col items-center rounded-md justify-center max-w-3xl  p-3'>
@@ -307,7 +345,16 @@ export const ChatInterface = () => {
 					) : (
 						<div className='flex flex-col w-full  mt-20 py-5'>
 							{messages.map((message: ChatMessageInterface, index) => (
-								<ChatMessage key={index} message={message} />
+								<ChatMessage
+									key={index}
+									message={message}
+									playingMessageId={tts.playingMessageId}
+									isPlaying={tts.isPlaying}
+									isPaused={tts.isPaused}
+									speak={tts.speak}
+									togglePauseResume={tts.togglePauseResume}
+									cancel={tts.cancel}
+								/>
 							))}
 
 							{/* Loader */}
@@ -378,6 +425,17 @@ export const ChatInterface = () => {
 				{userId && userId !== '' && (
 					<div className='w-full static bottom-0'>
 						<ChatInput onSendMessage={handleMessageSend} isLoading={isLoading} />
+						{/* <div className='p-4'>
+							<button
+								onClick={isRecording ? stopRecording : startRecording}
+								className='px-4 py-2 bg-blue-600 text-white rounded-lg'>
+								{isRecording ? 'Stop Recording' : 'Start Recording'}
+							</button>
+
+							{transcript && (
+								<p className='mt-3 text-gray-900'>Transcript: {transcript}</p>
+							)}
+						</div> */}
 					</div>
 				)}
 			</div>
