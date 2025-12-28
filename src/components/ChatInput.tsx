@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useVoiceToText } from '../hooks/useVoiceToText';
+import { useAudioRecorder } from '../hooks/useAudioRecorder';
 
 interface ChatInputProps {
 	onSendMessage: (message: string) => Promise<void>;
@@ -14,8 +15,10 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
 		await onSendMessage(transcript);
 	};
 
-	const { listening, startedListening, browserSupportsSpeechRecognition } =
-		useVoiceToText(handleVoiceTranscript);
+	const { isRecording, startRecording, stopRecording } = useAudioRecorder(handleVoiceTranscript);
+
+	// const { listening, startedListening, browserSupportsSpeechRecognition } =
+	useVoiceToText(handleVoiceTranscript);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -57,7 +60,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
 						onKeyDown={handleKeyDown}
 						onChange={handleInputChange}
 					/>
-					{browserSupportsSpeechRecognition && (
+					{/* {browserSupportsSpeechRecognition && (
 						<button
 							type='button'
 							onClick={startedListening}
@@ -67,7 +70,16 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage, isLoading }) => {
 							title={listening ? 'Listening…' : 'Record Voice'}>
 							{listening ? '🎙️' : '🎤'}
 						</button>
-					)}
+					)} */}
+					<button
+						type='button'
+						onMouseDown={startRecording}
+						onMouseUp={stopRecording}
+						className={`m-1 w-10 h-10 rounded-full ${
+							isRecording ? 'bg-red-500 animate-pulse' : 'bg-gray-200'
+						}`}>
+						{isRecording ? '🛑' : '🎤'}
+					</button>
 					<button
 						type='submit'
 						disabled={isLoading || !inputValue.trim()}
